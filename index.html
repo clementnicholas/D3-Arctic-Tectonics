@@ -8,22 +8,6 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <script>
-      $(function() {
-        $( "#slider-range" ).slider({
-          range: true,
-          min: -600,
-          max: 999,
-          values: [ -400, -200 ],
-          slide: function( event, ui ) {
-            $( "#range" ).val( "From " + ui.values[0] + " To " + ui.values[1] );
-            $('path.coastlines').a
-          }
-        });
-        $( "#range" ).val("From " + $("#slider-range").slider("values", 0) +
-         " To " + $("#slider-range").slider( "values", 1 ));
-      });
-  </script>
   </head>
   <body>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -32,21 +16,13 @@
     <div id="container">
       <header>
         <h1>Arctic Plate Movement and Coastlines Since Pangaea</h1>
-        <h3 id='slider-values'></h3>
       </header>
     </div>
     <div id="hello-world"></div>
-    <div id="slider-container">
-      <p>
-        <label for="year-range">Years</label>
-        <input type="text" id="range" readonly style="border:0; color:#f6931f; font-weight:bold;">
-      </p>
-  
-      <div id="slider-range"></div>
     </div>
 
     <script>
-      var width = 1000, height = 800;
+      var width = 1000, height = 1000;
       var projection = d3.geo.orthographic()
         .scale(500)
         .translate([width/2, height/2])
@@ -93,17 +69,11 @@
             .attr("class", function(d) { return "coastlines " + d.properties.NAME + ' from' + d.properties.FROMAGE + ' to' + d.properties.TOAGE; })
             .attr("d", path)
             .attr("from", function(d) {return d.properties.FROMAGE })
-            .attr("to", function(d) {return d.properties.TOAGE });
-
-        $('#slider-range').on('slide', function(e, ui) {
-          svg.selectAll('.coastlines')
-              .data(topojson.feature(plates, plates.objects.coastlines).features, function(d) {
-                if (d.properties.FROMAGE * -1 < ui.values[0]) {
-                  console.log(d);
-                };
-              });
-
-        });
+            .attr("to", function(d) {return d.properties.TOAGE })
+            .attr("fill", function(d) {return 'rgb(' + d.properties.FROMAGE / 2.4 + ',' + d.properties.FROMAGE / 2.4 + ',' + d.properties.FROMAGE / 2.4 +')'})
+            // .attr("stroke", function(d) {return 'rgb(' + d.properties.TOAGE / -4 + ',0,0)'})
+            .attr("stroke", 'red')
+            .attr("stroke-width", function(d) { return -999 / d.properties.TOAGE });
       });
 
     </script>
