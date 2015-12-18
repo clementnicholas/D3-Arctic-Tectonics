@@ -8,20 +8,20 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <link rel="stylesheet" href="/resources/demos/style.css">
     <script>
       $(function() {
         $( "#slider-range" ).slider({
           range: true,
-          min: 0,
-          max: 500,
-          values: [ 75, 300 ],
+          min: -600,
+          max: 999,
+          values: [ -400, -200 ],
           slide: function( event, ui ) {
-            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
+            $( "#range" ).val( "From " + ui.values[0] + " To " + ui.values[1] );
+            $('path.coastlines').a
           }
         });
-        $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
-         " - $" + $( "#slider-range" ).slider( "values", 1 ) );
+        $( "#range" ).val("From " + $("#slider-range").slider("values", 0) +
+         " To " + $("#slider-range").slider( "values", 1 ));
       });
   </script>
   </head>
@@ -32,20 +32,21 @@
     <div id="container">
       <header>
         <h1>Arctic Plate Movement and Coastlines Since Pangaea</h1>
+        <h3 id='slider-values'></h3>
       </header>
     </div>
     <div id="hello-world"></div>
     <div id="slider-container">
       <p>
-        <label for="amount">Price range:</label>
-        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+        <label for="year-range">Years</label>
+        <input type="text" id="range" readonly style="border:0; color:#f6931f; font-weight:bold;">
       </p>
   
       <div id="slider-range"></div>
     </div>
 
     <script>
-      var width = 960, height = 500;
+      var width = 1000, height = 800;
       var projection = d3.geo.orthographic()
         .scale(500)
         .translate([width/2, height/2])
@@ -65,13 +66,23 @@
       var svg = d3.select("#hello-world").append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr("class", 'globe-container');
+        .attr("id", 'globe-container');
 
-      svg.on("mousemove", function() {
-        var p = d3.mouse(this);
-        projection.rotate( [lamd(p[0]) , phi(p[1]) ]);
-        svg.selectAll("path").attr("d", path);
-      });
+      var mapmove = false;
+
+      document.getElementById('globe-container').addEventListener("mousedown", mdown, false);
+
+      function mdown() { 
+        console.log('clicked') 
+        mapmove = !mapmove;
+        svg.on("mousemove", function() {
+          if (mapmove == true) {
+            var p = d3.mouse(this);
+            projection.rotate( [lamd(p[0]) , phi(p[1]) ]);
+            svg.selectAll("path").attr("d", path);
+          }
+        });
+      }
 
       d3.json("goodplates.json", function(error, plates) {
         if (error) return console.error(error);
@@ -83,7 +94,17 @@
             .attr("d", path)
             .attr("from", function(d) {return d.properties.FROMAGE })
             .attr("to", function(d) {return d.properties.TOAGE });
-      })
+
+        $('#slider-range').on('slide', function(e, ui) {
+          svg.selectAll('.coastlines')
+              .data(topojson.feature(plates, plates.objects.coastlines).features, function(d) {
+                if (d.properties.FROMAGE * -1 < ui.values[0]) {
+                  console.log(d);
+                };
+              });
+
+        });
+      });
 
     </script>
   </body>

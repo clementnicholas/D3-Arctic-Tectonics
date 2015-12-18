@@ -1,12 +1,17 @@
+html, body {
+  background-color: #CCC;
+}
+
 h1 {
   text-align: center;
   font-family: serif helvetica sans-serif;
   margin: auto;
 }
 
-.globe-container {
+#globe-container {
   display: block;
   margin: auto;
+  background-color: #AAA;
 }
 
 .coastlines {
