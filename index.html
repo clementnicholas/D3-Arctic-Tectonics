@@ -8,22 +8,6 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <link rel="stylesheet" href="/resources/demos/style.css">
-    <script>
-      $(function() {
-        $( "#slider-range" ).slider({
-          range: true,
-          min: 0,
-          max: 500,
-          values: [ 75, 300 ],
-          slide: function( event, ui ) {
-            $( "#amount" ).val( "$" + ui.values[ 0 ] + " - $" + ui.values[ 1 ] );
-          }
-        });
-        $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
-         " - $" + $( "#slider-range" ).slider( "values", 1 ) );
-      });
-  </script>
   </head>
   <body>
     <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -35,17 +19,10 @@
       </header>
     </div>
     <div id="hello-world"></div>
-    <div id="slider-container">
-      <p>
-        <label for="amount">Price range:</label>
-        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
-      </p>
-  
-      <div id="slider-range"></div>
     </div>
 
     <script>
-      var width = 960, height = 500;
+      var width = 1000, height = 1000;
       var projection = d3.geo.orthographic()
         .scale(500)
         .translate([width/2, height/2])
@@ -65,13 +42,23 @@
       var svg = d3.select("#hello-world").append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr("class", 'globe-container');
+        .attr("id", 'globe-container');
 
-      svg.on("mousemove", function() {
-        var p = d3.mouse(this);
-        projection.rotate( [lamd(p[0]) , phi(p[1]) ]);
-        svg.selectAll("path").attr("d", path);
-      });
+      var mapmove = false;
+
+      document.getElementById('globe-container').addEventListener("mousedown", mdown, false);
+
+      function mdown() { 
+        console.log('clicked') 
+        mapmove = !mapmove;
+        svg.on("mousemove", function() {
+          if (mapmove == true) {
+            var p = d3.mouse(this);
+            projection.rotate( [lamd(p[0]) , phi(p[1]) ]);
+            svg.selectAll("path").attr("d", path);
+          }
+        });
+      }
 
       d3.json("goodplates.json", function(error, plates) {
         if (error) return console.error(error);
@@ -82,8 +69,12 @@
             .attr("class", function(d) { return "coastlines " + d.properties.NAME + ' from' + d.properties.FROMAGE + ' to' + d.properties.TOAGE; })
             .attr("d", path)
             .attr("from", function(d) {return d.properties.FROMAGE })
-            .attr("to", function(d) {return d.properties.TOAGE });
-      })
+            .attr("to", function(d) {return d.properties.TOAGE })
+            .attr("fill", function(d) {return 'rgb(' + d.properties.FROMAGE / 2.4 + ',' + d.properties.FROMAGE / 2.4 + ',' + d.properties.FROMAGE / 2.4 +')'})
+            // .attr("stroke", function(d) {return 'rgb(' + d.properties.TOAGE / -4 + ',0,0)'})
+            .attr("stroke", 'red')
+            .attr("stroke-width", function(d) { return -999 / d.properties.TOAGE });
+      });
 
     </script>
   </body>

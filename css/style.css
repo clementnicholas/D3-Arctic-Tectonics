@@ -1,25 +1,30 @@
+html, body {
+  background-color: #CCC;
+}
+
 h1 {
   text-align: center;
   font-family: serif helvetica sans-serif;
   margin: auto;
 }
 
-.globe-container {
+#globe-container {
   display: block;
   margin: auto;
+  background-color: cyan;
 }
 
-.coastlines {
+/*.coastlines {
   fill: #5D5D5D;
   stroke: red;
   stroke-width: 0.25px;
-}
+}*/
 
-.coastlines.to0 {
+/*.coastlines.to0 {
   stoke: blue;
   stroke-width: 3px;
   fill: cyan ;
-}
+}*/
 
 #slider-container {
   margin: 50px 25%;
