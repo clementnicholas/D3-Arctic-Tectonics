@@ -11,7 +11,7 @@ h1 {
 #globe-container {
   display: block;
   margin: auto;
-  background-color: #AAA;
+  background-color: cyan;
 }
 
 /*.coastlines {
